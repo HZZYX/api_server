@@ -35,7 +35,7 @@ router.post(
 // 更新用户头像
 router.post(
   "/update/avatar",
-  update_avatar_schema,
+  expressJoi(update_avatar_schema),
   userinfo_handler.updateAvatar
 );
 

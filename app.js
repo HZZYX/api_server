@@ -43,18 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
-// 错误中间件
-app.use(function (err, req, res, next) {
-  if (err.name == "UnauthorizedError") return res.cc("身份认证失败！");
-});
 
-app.use(function (err, req, res, next) {
-  // 数据验证失败
-  // 局部中间件
-  if (err instanceof joi.ValidationError) return res.cc(err);
-  // 未知错误
-  res.cc(err);
-});
 
 // 导入并注册用户路由模块
 const usrRouter = require("./router/user");
@@ -64,6 +53,15 @@ app.use("/api", usrRouter);
 const userInfoRouter = require("./router/userinfo");
 // 注意：以 /my 开头的接口，都是有权限的接口，需要进行 Token身份认证
 app.use("/my", userInfoRouter);
+
+// 错误中间件
+app.use(function (err, req, res, next) {
+  if (err.name == "UnauthorizedError") return res.cc("身份认证失败！");
+   // 局部中间件
+  if (err instanceof joi.ValidationError) return res.cc(err);
+  // 未知错误
+  res.cc(err);
+});
 
 // 调用 app.listen 方法，指定端口号并启动web服务器
 app.listen(port, () =>

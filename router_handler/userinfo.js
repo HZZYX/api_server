@@ -78,11 +78,12 @@ exports.updatePassword = (req, res) => {
 
 // 更新用户头像的处理函数
 exports.updateAvatar = (req, res) => {
+  console.log("有人请求了改接口",req.user);
   // 定义更新用户头像的 SQL 语句
-  const sql = "UPDATE users SET user_pic=? WHERER id=?";
+  const sql = "UPDATE users SET user_pic=? WHERE id=?";
 
   // 调用 db.query() 执行 SQL 语句，更新对应用户的头像
-  db.query(sql, [req.body.avatar, req.user.id], (err, results) => {
+  db.query(sql, [req.body.avatar, req.user.Id], (err, results) => {
     // 执行 SQL 语句失败
     if (err) return res.cc(err);
     // 执行 SQL 语句成功，但影响的行数不等于1
