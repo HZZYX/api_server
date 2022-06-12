@@ -26,7 +26,9 @@ app.use(function (req, res, next) {
 });
 
 // 使用 .unless({path:[/^\/api\//]}) 指定哪些接口不需要进行 Token 的身份认证
-app.use(expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] }));
+app.use(
+  expressJWT({ secret: config.jwtSecretKey }).unless({ path: [/^\/api\//] })
+);
 
 // 错误中间件
 const joi = require("joi");
@@ -42,9 +44,6 @@ app.use(express.urlencoded({ extended: false }));
 // 配置解析 json 格式数据的中间件
 app.use(express.json());
 
-
-
-
 // 导入并注册用户路由模块
 const usrRouter = require("./router/user");
 app.use("/api", usrRouter);
@@ -54,10 +53,21 @@ const userInfoRouter = require("./router/userinfo");
 // 注意：以 /my 开头的接口，都是有权限的接口，需要进行 Token身份认证
 app.use("/my", userInfoRouter);
 
+// 导入并使用文章分类路由模块
+const artCateRouter = require("./router/artcate");
+// 为文章分类的路由挂载统一访问前缀 /my/article
+app.use("/my/article", artCateRouter);
+
+// 导入并使用文章路由模块
+const articleRouter = require("./router/article");
+// 为文章的路由挂载统一的访问前缀 /my/article
+app.use("/my/article", articleRouter);
+
 // 错误中间件
 app.use(function (err, req, res, next) {
+  // TOken验证失败
   if (err.name == "UnauthorizedError") return res.cc("身份认证失败！");
-   // 局部中间件
+  // 数据验证失败
   if (err instanceof joi.ValidationError) return res.cc(err);
   // 未知错误
   res.cc(err);
